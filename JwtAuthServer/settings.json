@@ -1,0 +1,7 @@
+{
+  "ConnectionStrings": {
+    "ClientRegistrationDB": "",
+    "PublicKeyVaultDB": "",
+    "CompleteKeyVaultDB": ""
+  }
+}
