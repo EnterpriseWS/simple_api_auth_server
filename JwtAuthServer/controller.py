@@ -1,11 +1,13 @@
 import cherrypy
+import helper
 
 
-class HelloWorld(object):
+class OauthAuthServer(object):
     @cherrypy.expose
     def index(self):
-        return "Hello world!"
+        return cherrypy.request.app.config['/']['greeting']
 
 
 if __name__ == '__main__':
-    cherrypy.quickstart(HelloWorld())
+    settings = helper.ConfigurationSettingsLocal(source='settings.json').load_all_settings()
+    cherrypy.quickstart(OauthAuthServer(), '/', settings['cherryPy'])

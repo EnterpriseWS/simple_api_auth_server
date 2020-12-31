@@ -1,7 +1,13 @@
 {
-  "ConnectionStrings": {
-    "ClientRegistrationDB": "",
-    "PublicKeyVaultDB": "",
-    "CompleteKeyVaultDB": ""
+  "connectionStrings": {
+    "clientRegistrationDB": "",
+    "publicKeyVaultDB": "",
+    "completeKeyVaultDB": ""
+  },
+
+  "cherryPy": {
+    "/": {
+      "greeting": "Hello world!"
+    }
   }
 }
