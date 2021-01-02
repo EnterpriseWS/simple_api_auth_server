@@ -1,7 +1,27 @@
+from typing import Any
 import jwt
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
+
+
+class AccessTokenJwt(object):
+    def __init__(self, identifier: str):
+        self._identifier = identifier
+        self._private_key = self.load_private_key()
+        self._public_key = self.load_public_key()
+
+    def assemble_jwt(self, header: str, payload: str, payload_encrypt: bool) -> str:
+        pass
+
+    def create_basic_header(self) -> str:
+        pass
+
+    def load_private_key(self) -> Any:
+        pass
+
+    def load_public_key(self) -> Any:
+        pass
 
 # This is a sample Python script.
 # Press ⇧F10 to execute it or replace it with your code.
