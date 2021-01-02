@@ -9,19 +9,18 @@ _app = Flask(__name__)
 _helper = helper.ConfigurationSettingsLocal(source='settings.json')
 
 
-def convert_query_string_to_json(args: Any) -> Any:
-    return jsonify(args)
-
-
 @_app.route('/auth', methods=['GET'])
 def get_auth():
     try:
-        grant_type = request.args.get('grant_type')
-        handler = grant_handler.GrantHandler(convert_query_string_to_json(request.args))
-        if grant_type == 'client_credentials':
-            return handler.respond_client_credential_grant()
-    except Exception:
-        return "Not valid", 400
+        grant_content = jsonify(request.args).json
+        handler = grant_handler.GrantHandler(grant_content)
+        return jsonify(handler.respond_all_grant())
+    except TypeError as ex:
+        print(ex)
+        return 'type error', 400
+    except Exception as ex:
+        print(ex)
+        return 'invalid parameter', 400
 
 
 @_app.route('/auth', methods=['POST'])
