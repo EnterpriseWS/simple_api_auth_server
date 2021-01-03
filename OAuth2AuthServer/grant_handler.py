@@ -1,6 +1,15 @@
 import json
 from typing import Any, Dict
 
+RESPONSE_TEMPLATE_CLIENT_CREDENTIAL = {'token_type': 'Bearer',
+                                       'expires_in': 0,
+                                       'access_token': ''}
+RESPONSE_TEMPLATE_REFRESH_TOKEN = {'token_type': 'Bearer',
+                                   'expires_in': 0,
+                                   'access_token': '',
+                                   'refresh_token': ''}
+# TODO: Needs to setup the template of other grant types.
+
 
 class GrantHandler(object):
     def __init__(self, grant_content: Dict):

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+</head>
+<body>
+    <!-- TODO: Temporary form, add a CSS to align the form better -->
+    <h2>{{title}}</h2>
+    <div>
+        <form action="/reg/api" method="post">
+            <div>
+                <p><label>Department: </label><input type="text" name="department"></input></p>
+                <p><label>Scope: </label><input type="text" name="scope"></input></p>
+                <p><label>SME: </label><input type="text" name="sme"></input></p>
+            </div>
+            <div>
+                <label>Payload: </label>
+                <input type="radio" name="Payload" value="encrypted">Encrypted</input>
+                <input type="radio" name="Payload" value="unencrypted">Unencrypted</input>
+            </div>
+            <div><p><input type="submit" value="Register"></input></p></div>
+        </form>
+    </div>
+</body>
+</html>

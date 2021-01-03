@@ -1,7 +1,5 @@
-import sys
 import json
-from typing import Any
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 import helper
 import grant_handler
 
@@ -29,8 +27,40 @@ def post_auth():
         grant_type = (json.loads(request.data))['grant_type']
         if grant_type == 'client_credentials':
             return jsonify({'grant_type': 'Got it2'})
-    except Exception:
+    except Exception as ex:
+        print(ex)
         return "Not valid", 400
+
+# -------------------------- Registration process begin -------------------------
+# Perform the GUI display here to avoid CORS restriction during prototyping
+# TODO: In production, all registration processes need to be moved to a separated
+#       website for the rule of "segregation of duty" and to avoid "backdoor".
+
+
+@_app.route('/reg/gui')
+def post_reg_gui():
+    try:
+        title = 'Client Registration'
+        return render_template('index.html', title=title)
+    except TemplateNotFound as ex:
+        print(ex)
+    except Exception as ex:
+        print(ex)
+        return "Not valid", 400
+
+
+@_app.route('/reg/api', methods=['POST'])
+def post_reg_api():
+    try:
+        grant_type = (json.loads(request.data))['grant_type']
+        if grant_type == 'client_credentials':
+            return jsonify({'grant_type': 'Got it2'})
+    except JSONDecodeError as ex:
+        print(ex)
+    except Exception as ex:
+        print(ex)
+        return "Not valid", 400
+# -------------------------- Registration process end ---------------------------
 
 
 if __name__ == '__main__':
