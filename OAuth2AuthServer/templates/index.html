@@ -10,14 +10,15 @@
     <div>
         <form action="/reg/api" method="post">
             <div>
+                <p><label>Identifier: </label><input type="text" name="identifier"></input></p>
                 <p><label>Department: </label><input type="text" name="department"></input></p>
                 <p><label>Scope: </label><input type="text" name="scope"></input></p>
                 <p><label>SME: </label><input type="text" name="sme"></input></p>
             </div>
             <div>
-                <label>Payload: </label>
-                <input type="radio" name="Payload" value="encrypted">Encrypted</input>
-                <input type="radio" name="Payload" value="unencrypted">Unencrypted</input>
+                <label>Payload Encryption: </label>
+                <input type="radio" name="payload_encrypt" value="true">Yes</input>
+                <input type="radio" name="payload_encrypt" value="false">No</input>
             </div>
             <div><p><input type="submit" value="Register"></input></p></div>
         </form>

@@ -5,7 +5,7 @@
     "completeKeyVaultDB": ""
   },
 
-  "cherryPy": {
+  "flask": {
     "/": {
       "greeting": "Hello world!"
     }

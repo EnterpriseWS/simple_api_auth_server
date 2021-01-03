@@ -1,10 +1,13 @@
 import json
 from flask import Flask, jsonify, request, render_template
+from jinja2 import TemplateNotFound
 import helper
 import grant_handler
 
 _app = Flask(__name__)
 _helper = helper.ConfigurationSettingsLocal(source='settings.json')
+
+# TODO: Add input-validation function to each route
 
 
 @_app.route('/auth', methods=['GET'])
@@ -52,10 +55,12 @@ def post_reg_gui():
 @_app.route('/reg/api', methods=['POST'])
 def post_reg_api():
     try:
-        grant_type = (json.loads(request.data))['grant_type']
-        if grant_type == 'client_credentials':
-            return jsonify({'grant_type': 'Got it2'})
-    except JSONDecodeError as ex:
+        reg_info = {'department': request.form.get('department'),
+                    'scope': request.form.get('scope'),
+                    'sme': request.form.get('sme'),
+                    'payload_encrypt': request.form.get('payload_encrypt')}
+        return jsonify(reg_info)
+    except json.JSONDecodeError as ex:
         print(ex)
     except Exception as ex:
         print(ex)
