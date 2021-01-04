@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request, render_template
 from jinja2 import TemplateNotFound
 import helper
 import grant_handler
+import client_reg
 
 _app = Flask(__name__)
 _helper = helper.ConfigurationSettingsLocal(source='settings.json')

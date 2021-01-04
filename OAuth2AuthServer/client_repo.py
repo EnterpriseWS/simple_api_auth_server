@@ -40,10 +40,10 @@ class ClientRepository(BaseClient):
         self.create_date = date.today()
 
 
-class ClientRepositoryOp:
+class ClientRepositoryOp(object):
     def __init__(self):
         engine = engine_from_config(config_client)
-        # TODO: Find other parameter values for sessionmake() to ensure proper DB operations.
+        # TODO: Find other parameter values for sessionmaker() to ensure proper DB operations.
         SessionClient = sessionmaker(bind=engine)
         self._session = SessionClient()
         BaseClient.metadata.create_all(engine)

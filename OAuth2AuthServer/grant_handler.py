@@ -43,7 +43,7 @@ class GrantHandler(object):
 
     # Handling grant request for machine-to-machine (M2M).
     def respond_client_credential_grant(self) -> Any:
-        self._grant_response = {"token_type": "Bearer"}
+        self._grant_response = RESPONSE_TEMPLATE_CLIENT_CREDENTIAL
         return self._grant_response
 
     # Handling grant request for renewing tokens.

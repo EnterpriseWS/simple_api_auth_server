@@ -43,7 +43,7 @@ class AuthRepository(BaseAuth):
 class AuthRepositoryOp:
     def __init__(self):
         engine = engine_from_config(config_auth)
-        # TODO: Find other parameter values for sessionmake() to ensure proper DB operations.
+        # TODO: Find other parameter values for sessionmaker() to ensure proper DB operations.
         SessionClient = sessionmaker(bind=engine)
         self._session = SessionClient()
         BaseAuth.metadata.create_all(engine)
