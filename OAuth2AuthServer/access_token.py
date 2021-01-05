@@ -27,6 +27,21 @@ class AccessTokenJwt(object):
             print(ex)
             raise ex
 
+    # TODO: Mark the method below as restricted use when it is necessary.
+    def verify_jwt(self, jwt_str: str, public_key: str = None, client_id: int = 0) -> bool:
+        verified = False
+        try:
+            if client_id > 0 and public_key is None:
+                public_key = self.get_public_key(client_id)
+            if len(jwt_str) > 5 and public_key is not None:
+                claims = jwt.decode(jwt_str, public_key, algorithms='RS256', verify=True)
+                if len(claims) > 0:
+                    verified = True
+                    return verified
+        except Exception as ex:
+            print(ex)
+            raise ex
+
     def generate_rsa_keys(self) -> Dict:
         keypair = rsa.generate_private_key(backend=default_backend(),
                                            public_exponent=65537,
