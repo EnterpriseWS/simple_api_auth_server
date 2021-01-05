@@ -3,6 +3,7 @@ from sqlalchemy.schema import Sequence
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import date
+from typing import Dict
 import logging
 import sys
 
@@ -62,6 +63,23 @@ class AuthRepositoryOp:
         except Exception as ex:
             print(ex)
             logging.error('AuthRepositoryOp write() error: ', sys.exc_info()[0])
+
+    def read(self, val_client_id: int) -> Dict:
+        try:
+            query_row = self._session.query(AuthRepository)\
+                .filter(AuthRepository.client_id == val_client_id)\
+                .one()
+            return {'id': query_row.id,
+                    'client_id': query_row.client_id,
+                    'private_key': query_row.private_key,
+                    'public_key': query_row.public_key,
+                    'eff_date': query_row.eff_date,
+                    'exp_date': query_row.exp_date,
+                    'create_by': query_row.create_by,
+                    'create_date': query_row.create_date}
+        except Exception as ex:
+            print(ex)
+            logging.error('ClientRepositoryOp read() error: ', sys.exc_info()[0])
 
     def close(self) -> None:
         self._session.close()
