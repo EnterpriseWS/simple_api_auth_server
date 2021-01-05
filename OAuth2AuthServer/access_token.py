@@ -8,8 +8,7 @@ import jwt
 
 
 class AccessTokenJwt(object):
-    def __init__(self, identifier: str, client_id: int = 0):
-        self._identifier = identifier
+    def __init__(self, client_id: int = 0):
         self._private_key = None
         self._public_key = None
 
@@ -17,7 +16,6 @@ class AccessTokenJwt(object):
         # NOTE: Currently the payload encryption is disabled.
         # TODO: Add payload encryption to the later version.
         try:
-            headers['kid'] = self._identifier
             jwt_str = jwt.encode(payload, self._private_key, algorithm='RS256', headers=headers)
             # TODO: Determine if it is needed to validate the token before returning it.
             # verified_str = jwt.decode(jwt_str, self._public_key, algorithms='RS256', verify=True)
@@ -29,7 +27,7 @@ class AccessTokenJwt(object):
             print(ex)
             raise ex
 
-    def create_rsa_keys(self) -> Dict:
+    def generate_rsa_keys(self) -> Dict:
         keypair = rsa.generate_private_key(backend=default_backend(),
                                            public_exponent=65537,
                                            key_size=2048)
@@ -43,9 +41,6 @@ class AccessTokenJwt(object):
                                                   encryption_algorithm=serialization.NoEncryption())
         return {'private_key': self._private_key,
                 'public_key': self._public_key}
-
-    def create_basic_header(self) -> str:
-        pass
 
     def get_private_key(self, client_id: int = 0) -> str:
         if client_id == 0 and self._private_key is not None:
@@ -95,7 +90,7 @@ class AccessTokenJwt(object):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     tk = AccessTokenJwt('abc-0123456')
-    tk.create_rsa_keys()
+    tk.generate_rsa_keys()
     tk.save_all_keys(101)
     tk.get_public_key(101)
     tk.get_private_key()

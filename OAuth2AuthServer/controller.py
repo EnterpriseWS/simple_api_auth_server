@@ -58,9 +58,10 @@ def post_reg_api():
     try:
         reg_info = {'department': request.form.get('department'),
                     'scope': request.form.get('scope'),
-                    'sme': request.form.get('sme'),
+                    'sme_name': request.form.get('sme_name'),
                     'payload_encrypt': request.form.get('payload_encrypt')}
-        return jsonify(reg_info)
+        reg = client_reg.ClientRegistration(reg_info)
+        return jsonify(reg.register_client())
     except json.JSONDecodeError as ex:
         print(ex)
     except Exception as ex:
