@@ -51,7 +51,7 @@ class AuthRepositoryOp:
     def write(self, val_client_id,
               val_private_key, val_public_key,
               val_eff_date, val_exp_date,
-              val_create_by):
+              val_create_by) -> None:
         try:
             new_row = AuthRepository(val_client_id,
                                      val_private_key, val_public_key,
@@ -62,7 +62,6 @@ class AuthRepositoryOp:
         except Exception as ex:
             print(ex)
             logging.error('AuthRepositoryOp write() error: ', sys.exc_info()[0])
-        return
 
-    def close(self):
+    def close(self) -> None:
         self._session.close()
