@@ -1,1 +1,4 @@
-# simple_api_auth_server
+# Simple Auth Server
+  As more organization adopting RESTful API approach for providing digitalized services, external/internal cybersecurity has become a critical topic of an organization. The traditional authentication and authorization methods, such as Kerberos and Windows Authentication, are cumbersome for the these modern JSON-based APIs. OAUTH 2.0 framework has been created to overcome the challenges.
+  Recently I have started implementing a simple Authorization Server based on the published RFC-6749 (The OAuth 2.0 Authorization Framework) with Python language as an open-source project. The first implementation of the framework is Client Credential Grant (a.k.a. Machine-to-Machine, M2M, Grant). Anyone is welcome to download the source code and try it out. Since this is still in the prototyping phase, many error handling and testing need to be done. The diagram below illustrates how this service works for M2M grant.
+  
