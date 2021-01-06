@@ -3,9 +3,8 @@ from typing import Any, Dict
 import client_repo
 import access_token
 import jwt
-from urllib import parse
 from datetime import datetime, timedelta
-# import base64
+import base64
 
 JWT_MIN_LEN = 5 # 2 dots and 3 letters
 JWT_MAX_LIVE = 30 # token maximum live time
@@ -27,7 +26,10 @@ class GrantHandler(object):
     def respond_all_grant(self) -> Any:
         try:
             if self._grant_content['grant_type'] == 'client_credentials':
-                return self.respond_client_credential_grant()
+                payload = None
+                if self._grant_content['payload'] is not None:
+                    payload = json.loads(base64.b64decode(self._grant_content['payload']))
+                return self.respond_client_credential_grant(payload)
             else:
                 pass
         except AttributeError as ex:
@@ -38,19 +40,19 @@ class GrantHandler(object):
             print(ex)
 
     # Handling grant request for 3rd party authentication.
-    def respond_code_grant(self):
+    def respond_code_grant(self, payload: Dict = None):
         pass
 
     # Handling grant request for agent clients.
-    def respond_token_grant(self):
+    def respond_token_grant(self, payload: Dict = None):
         pass
 
     # Handling grant request for user's web pages.
-    def respond_password_grant(self):
+    def respond_password_grant(self, payload: Dict = None):
         pass
 
     # Handling grant request for machine-to-machine (M2M).
-    def respond_client_credential_grant(self) -> Dict:
+    def respond_client_credential_grant(self, payload: Dict = None) -> Dict:
         self._grant_response = RESPONSE_TEMPLATE_CLIENT_CREDENTIAL
         client_uuid = self._grant_content['client_id']
         verified = False
@@ -70,16 +72,22 @@ class GrantHandler(object):
                         # TODO: If value of "enc" is "True", payload of JWT token needs to be encrypted.
                         nbf = datetime.now().timestamp()
                         exp = (datetime.now() + timedelta(minutes=JWT_MAX_LIVE)).timestamp()
-                        self._grant_response['expires_in'] = exp
+                        actual_payload = {'scope': repo_info['scope'],
+                                          'nbf': nbf,
+                                          'exp': exp}
+                        if payload is not None:
+                            for item in payload:
+                                # Unconditionally overwrite the value if the item already exists.
+                                actual_payload[item] = payload[item]
+                        self._grant_response['expires_in'] = str(exp)
                         self._grant_response['access_token'] = \
-                            parse.quote_plus(token.assemble_jwt({'kid': client_uuid},
-                                                                {'scope': repo_info['scope'],
-                                                                 'nbf': nbf,
-                                                                 'exp': exp}))
+                            token.assemble_jwt({'kid': client_uuid}, actual_payload)
             return self._grant_response
+        except jwt.InvalidSignatureError as ex:
+            print(ex)
         except Exception as ex:
             print(ex)
 
     # Handling grant request for renewing tokens.
-    def respond_refresh_token_grant(self):
+    def respond_refresh_token_grant(self, payload: Dict = None):
         pass

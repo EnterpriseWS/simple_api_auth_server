@@ -62,7 +62,7 @@ class AccessTokenJwt(object):
             return self._private_key
         repo = auth_repo.AuthRepositoryOp()
         try:
-            self._private_key = (repo.read(client_id))['private_key']
+            self._private_key = ((repo.read(client_id))['private_key']).encode()
             return self._private_key
         except Exception as ex:
             print(ex)
@@ -75,7 +75,7 @@ class AccessTokenJwt(object):
             return self._private_key
         repo = auth_repo.AuthRepositoryOp()
         try:
-            self._public_key = (repo.read(client_id))['public_key']
+            self._public_key = ((repo.read(client_id))['public_key']).encode()
             return self._public_key
         except Exception as ex:
             print(ex)
@@ -92,7 +92,8 @@ class AccessTokenJwt(object):
         repo = auth_repo.AuthRepositoryOp()
         try:
             repo.write(client_id,
-                       self._private_key, self._public_key,
+                       bytes.decode(self._private_key),
+                       bytes.decode(self._public_key),
                        eff_date, exp_date,
                        None)
         except Exception as ex:

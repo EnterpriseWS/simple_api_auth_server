@@ -5,7 +5,7 @@ import client_repo
 import auth_repo
 from datetime import datetime, timedelta
 import access_token
-from urllib import parse
+import base64
 
 
 class ClientRegistration(object):
@@ -26,7 +26,7 @@ class ClientRegistration(object):
                         self._reg_info['department'],
                         self._reg_info['scope'],
                         self._reg_info['sme_name'],
-                        keys['public_key'],
+                        bytes.decode(keys['public_key']),
                         eff_date,
                         exp_date)
             self._client_repo_data = db_op.read(client_uuid)
@@ -38,8 +38,8 @@ class ClientRegistration(object):
                                                 'nbf': eff_date.timestamp(),
                                                 'exp': exp_date.timestamp(),
                                                 'enc': self._reg_info['payload_encrypt']})
-            return {'client_secret': parse.quote_plus(client_secret),
-                    'public_key': parse.quote_plus(keys['public_key'])}
+            return {'client_secret': client_secret,
+                    'public_key': base64.b64encode(keys['public_key'])}
         except Exception as ex:
             print(ex)
 
