@@ -1,3 +1,4 @@
+from typing import Any
 import json
 import uvicorn
 from fastapi import FastAPI, Request, Form
@@ -17,29 +18,44 @@ _helper = helper.ConfigurationSettingsLocal(source='settings.json')
 # TODO: Add input-validation function to each route
 
 
-@app.route('/auth', methods=['GET'])
-async def get_auth():
+@app.get('/auth')
+async def get_auth(grant_type: str,
+                   client_id: str,
+                   client_secret: str,
+                   scope: str,
+                   payload: str):
     try:
-        handler = grant_handler.GrantHandler(decode_input(jsonable_encoder(Request.args).json))
-        output = handler.respond_all_grant()
-        return jsonable_encoder(encode_output(output))
+        request_dict = {'grant_type': grant_type,
+                        'client_id': client_id,
+                        'client_secret': client_secret,
+                        'scope': scope,
+                        'payload': payload}
+        return await generate_auth(request_dict)
     except TypeError as ex:
         print(ex)
-        return 'type error', 400
+        return 'type error', 401
     except Exception as ex:
         print(ex)
         return 'invalid parameter', 400
 
 
-@app.route('/auth', methods=['POST'])
-async def post_auth():
+@app.post('/auth')
+async def post_auth(request: Request):
     try:
-        handler = grant_handler.GrantHandler(decode_input(json.loads(Request.data)))
-        output = handler.respond_all_grant()
-        return jsonable_encoder(encode_output(output))
+        request_dict = await request.json()
+        return await generate_auth(request_dict)
+    except TypeError as ex:
+        print(ex)
+        return 'type error', 401
     except Exception as ex:
         print(ex)
         return "Not valid", 400
+
+
+async def generate_auth(request_dict: Dict) -> Any:
+    handler = grant_handler.GrantHandler(decode_input(request_dict))
+    output = handler.respond_all_grant()
+    return jsonable_encoder(encode_output(output))
 
 
 def decode_input(json_input: json) -> Dict:
@@ -85,8 +101,7 @@ async def post_reg_api(request: Request):
         output = reg.register_client()
         # All URL encoding/decoding should be done at controller level.
         encoded_output = encode_output(output)
-        encoded_return_value = jsonable_encoder(encoded_output)
-        return encoded_return_value
+        return jsonable_encoder(encoded_output)
     except json.JSONDecodeError as ex:
         print(ex)
     except Exception as ex:
@@ -96,4 +111,5 @@ async def post_reg_api(request: Request):
 
 
 if __name__ == '__main__':
+    # Assign reload=False to avoid uvicorn detecting SQLite file change
     uvicorn.run('controller:app', port=8000, log_level='info', reload=False)
