@@ -1,5 +1,9 @@
 import json
-from flask import Flask, jsonify, request, render_template
+import uvicorn
+from fastapi import FastAPI, Request, Form
+from fastapi.responses import HTMLResponse
+from fastapi.encoders import jsonable_encoder
+from fastapi.templating import Jinja2Templates
 from jinja2 import TemplateNotFound
 import helper
 import grant_handler
@@ -7,18 +11,18 @@ import client_reg
 from urllib import parse
 from typing import Dict
 
-_app = Flask(__name__)
+app = FastAPI()
 _helper = helper.ConfigurationSettingsLocal(source='settings.json')
 
 # TODO: Add input-validation function to each route
 
 
-@_app.route('/auth', methods=['GET'])
-def get_auth():
+@app.route('/auth', methods=['GET'])
+async def get_auth():
     try:
-        handler = grant_handler.GrantHandler(decode_input(jsonify(request.args).json))
+        handler = grant_handler.GrantHandler(decode_input(jsonable_encoder(Request.args).json))
         output = handler.respond_all_grant()
-        return jsonify(encode_output(output))
+        return jsonable_encoder(encode_output(output))
     except TypeError as ex:
         print(ex)
         return 'type error', 400
@@ -27,12 +31,12 @@ def get_auth():
         return 'invalid parameter', 400
 
 
-@_app.route('/auth', methods=['POST'])
-def post_auth():
+@app.route('/auth', methods=['POST'])
+async def post_auth():
     try:
-        handler = grant_handler.GrantHandler(decode_input(json.loads(request.data)))
+        handler = grant_handler.GrantHandler(decode_input(json.loads(Request.data)))
         output = handler.respond_all_grant()
-        return jsonify(encode_output(output))
+        return jsonable_encoder(encode_output(output))
     except Exception as ex:
         print(ex)
         return "Not valid", 400
@@ -56,11 +60,12 @@ def encode_output(dict_output: Dict) -> Dict:
 #       website for the rule of "segregation of duty" and to avoid "backdoor".
 
 
-@_app.route('/reg/gui')
-def post_reg_gui():
+@app.get('/reg/gui', response_class=HTMLResponse)
+async def get_reg_gui(request: Request):
     try:
         title = 'Client Registration'
-        return render_template('index.html', title=title)
+        templates = Jinja2Templates(directory="templates")
+        return templates.TemplateResponse('index.html', {'request': request, 'title': title})
     except TemplateNotFound as ex:
         print(ex)
     except Exception as ex:
@@ -68,17 +73,20 @@ def post_reg_gui():
         return "Not valid", 400
 
 
-@_app.route('/reg/api', methods=['POST'])
-def post_reg_api():
+@app.post('/reg/api')
+async def post_reg_api(request: Request):
     try:
-        reg_info = {'department': request.form.get('department'),
-                    'scope': request.form.get('scope'),
-                    'sme_name': request.form.get('sme_name'),
-                    'payload_encrypt': request.form.get('payload_encrypt')}
+        form_data = await request.form()
+        reg_info = {'department': form_data.get('department'),
+                    'scope': form_data.get('scope'),
+                    'sme_name': form_data.get('sme_name'),
+                    'payload_encrypt': form_data.get('payload_encrypt')}
         reg = client_reg.ClientRegistration(reg_info)
         output = reg.register_client()
         # All URL encoding/decoding should be done at controller level.
-        return jsonify(encode_output(output))
+        encoded_output = encode_output(output)
+        encoded_return_value = jsonable_encoder(encoded_output)
+        return encoded_return_value
     except json.JSONDecodeError as ex:
         print(ex)
     except Exception as ex:
@@ -88,4 +96,4 @@ def post_reg_api():
 
 
 if __name__ == '__main__':
-    _app.run(debug=True)
+    uvicorn.run('controller:app', port=8000, log_level='info', reload=False)

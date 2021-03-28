@@ -15,7 +15,6 @@ class ClientRegistration(object):
 
     def register_client(self) -> Dict:
         try:
-            client_repo.ClientRepositoryOp()
             client_uuid = str(uuid.uuid4())
             token = access_token.AccessTokenJwt()
             keys = token.generate_rsa_keys()
@@ -29,6 +28,7 @@ class ClientRegistration(object):
                         bytes.decode(keys['public_key']),
                         eff_date,
                         exp_date)
+            db_op = client_repo.ClientRepositoryOp()
             self._client_repo_data = db_op.read(client_uuid)
             token.save_all_keys(self._client_repo_data['id'],
                                 self._client_repo_data['eff_date'],
