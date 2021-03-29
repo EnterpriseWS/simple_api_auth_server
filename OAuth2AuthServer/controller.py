@@ -1,5 +1,6 @@
 from typing import Any
 import json
+import time
 import uvicorn
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
@@ -16,6 +17,16 @@ app = FastAPI()
 _helper = helper.ConfigurationSettingsLocal(source='settings.json')
 
 # TODO: Add input-validation function to each route
+
+
+@app.middleware('http')
+async def check_connection(request: Request, call_next):
+    start_time = time.time()
+    # TODO: Insert some logic here before any request begins
+    response = await call_next(request)
+    # TODO: Insert some logic here before any response returns
+    end_time = time.time()
+    return response
 
 
 @app.get('/auth')
